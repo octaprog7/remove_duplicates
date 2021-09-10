@@ -2,6 +2,7 @@ import pathlib
 import shutil
 from operator import itemgetter
 import hashlib
+import os
 
 INVALID_VALUE = -1
 NO_ERROR_VALUE = 0
@@ -10,16 +11,16 @@ __name__ = "my_utils"
 __version__ = 1.0
 
 
-def get_file_name_from_path(strfullpathtofile):
+def get_file_name_from_path(fullpathtofile):
     """ return filename from full path file name """
-    path = pathlib.Path(strfullpathtofile)
+    path = pathlib.Path(fullpathtofile)
     return str(path.name)
 
 
-def get_folder_name_from_path(strfullpathtofile):
-    """ return folder name from full path file name """
-    mypath = pathlib.Path().absolute()
-    return str(mypath)
+#def get_folder_name_from_path(strfullpathtofile):
+#    """ return folder name from full path file name """
+#    mypath = pathlib.Path().absolute()
+#    return str(mypath)
 
 
 def get_folder_file_list(str_full_folder_path_name):
@@ -44,7 +45,7 @@ def get_folder_file_list(str_full_folder_path_name):
     return sorted(flist, key=itemgetter(1))
 
 
-def get_hash_file(path, algorithm="md5", bufsize=4096):
+def get_hash_file(path: str, algorithm="md5", bufsize=4096):
     """return hash of file"""
     h = hashlib.new(algorithm)
     with open(path, "rb") as f:
@@ -58,12 +59,12 @@ def is_folder_exist(full_folder_path):
     """check folder for exist and is folder
     return value is Boolean!"""
     folder = pathlib.Path(full_folder_path)
-    return folder.exists() and folder.is_dir()
+    return folder.is_dir() and folder.exists()
 
 
 def get_full_file_name(str_folder_owner, str_file_name):
     """returns the full file name adding the folder name and file name"""
-    return str_folder_owner + "\\" + str_file_name
+    return str_folder_owner + os.path.sep + str_file_name
 
 
 def delete_duplicate_file(folder_full_path, storage_folder=None):
