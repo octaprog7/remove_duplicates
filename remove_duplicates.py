@@ -14,18 +14,23 @@ import sys
 from remove_dublicates import my_utils
 
 
-def recursive_process_folder(start_folder, some_folder):
-    ret_val = my_utils.delete_duplicate_file(start_folder, some_folder)
+def recursive_process_folder(start_folder, trash_folder):
+    """
+    :param start_folder: Search for duplicate files starts from this folder.
+    :param trash_folder: found copies of files are transferred to this folder
+    :return:
+    """
+    ret_val = my_utils.delete_duplicate_file(start_folder, trash_folder)
     logging.info(f"Folder {start_folder} processed.")
     # enumerating
     pth = pathlib.Path(start_folder)
     for child in pth.iterdir():
         try:
             if child.is_dir():
-                ret_val += recursive_process_folder(str(child.absolute()), some_folder)
+                ret_val += recursive_process_folder(str(child.absolute()), trash_folder)
         except PermissionError:
             folder_name = str(child.absolute())
-            logging.warning(f"folder can't folder access: {folder_name}")
+            logging.warning(f"Access is denied! Folder: {folder_name}")
     # return value
     return ret_val
 
@@ -85,6 +90,11 @@ def main():
 
     ret_val = 0
     ret_val += recursive_process_folder(str_search_folder, str_storage_folder)
+    if args.recycle_bin:
+        movordel = "moved"
+    else:
+        movordel = "deleted"
+    logging.info(f"Found {ret_val} copies of files. They have been {movordel}.")
     sys.exit(ret_val)
 
 

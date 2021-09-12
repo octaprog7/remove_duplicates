@@ -23,10 +23,10 @@ def get_folder_name_from_path(strfullpathtofile):
     return str(mypath)
 
 
-def get_folder_file_list(str_full_folder_path_name):
+def get_folder_files_info(str_full_folder_path_name):
     """Return list of files in folder str_full_folder_path_name.
     Each list item contains a tuple of two elements (filename_without_path, file_size_in_bytes).
-    Returned list sorted by file_size ascending """
+    Returned tuple sorted by file_size ascending """
     flist = None
 
     lpath = pathlib.Path(str_full_folder_path_name)
@@ -38,10 +38,9 @@ def get_folder_file_list(str_full_folder_path_name):
     for child in lpath.iterdir():
         if child.is_file():
             file = pathlib.Path(child.absolute())
-            item_tuple = (child.name, file.stat().st_size)
-            flist.append(item_tuple)
+            flist.append((child.name, file.stat().st_size))
 
-    return sorted(flist, key=itemgetter(1))
+    return tuple(sorted(flist, key=itemgetter(1)))
 
 
 def get_hash_file(path: str, algorithm="md5", bufsize=4096):
@@ -85,14 +84,14 @@ def delete_duplicate_file(folder_full_path, storage_folder=None):
     if storage_folder and not is_folder_exist(storage_folder):
         return ret_val
 
-    file_list = get_folder_file_list(folder_full_path)
+    file_list = get_folder_files_info(folder_full_path)
 
     if not file_list:  # zero files for compare. exit
         return NO_ERROR_VALUE
 
     tpl_first = None
 
-    INDEX_FILE_NAME, INDEX_FILE_SIZE = range(2)
+    index_file_name, index_file_size = range(2)
 
     ret_val = NO_ERROR_VALUE
 
@@ -100,23 +99,21 @@ def delete_duplicate_file(folder_full_path, storage_folder=None):
         if tpl_first is None:
             tpl_first = item
             continue
-        if item[INDEX_FILE_SIZE] == tpl_first[INDEX_FILE_SIZE]:
-            fname = get_full_file_name(folder_full_path, item[INDEX_FILE_NAME])
-            h0 = get_hash_file(fname)
-            h1 = get_hash_file(
-                get_full_file_name(folder_full_path, tpl_first[INDEX_FILE_NAME]))
+        if item[index_file_size] == tpl_first[index_file_size]:
+            fname0 = get_full_file_name(folder_full_path, item[index_file_name])
+            fname1 = get_full_file_name(folder_full_path, tpl_first[index_file_name])
+            h0 = get_hash_file(fname0)
+            h1 = get_hash_file(fname1)
             if h0 == h1:
-                if storage_folder is None:
-                    f = pathlib.Path(fname)
+                if not storage_folder:
+                    f = pathlib.Path(fname0)
                     f.unlink()  # delete file
                     ret_val += 1
-                    # print("File {0} deleted.".format(fname))
                 else:
-                    dst = get_full_file_name(storage_folder, item[INDEX_FILE_NAME])
+                    dst = get_full_file_name(storage_folder, item[index_file_name])  # make full file name
                     # move duplicate file to storage folder
-                    shutil.move(fname, dst, copy_function=shutil.copy)
+                    shutil.move(fname0, dst, copy_function=shutil.copy)
                     ret_val += 1
-                    # print("File {0} moved to {1}".format(fname, dst))
         else:  # file size not equals
             tpl_first = item
             continue
