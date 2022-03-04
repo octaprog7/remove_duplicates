@@ -11,23 +11,23 @@ __name__ = "my_utils"
 __version__ = 1.0
 
 
-def get_file_name_from_path(fullpathtofile):
+def get_file_name_from_path(fullpathtofile: str):
     """ return filename from full path file name """
     path = pathlib.Path(fullpathtofile)
     return str(path.name)
 
 
-def get_folder_name_from_path(strfullpathtofile):
+def get_folder_name_from_path(strfullpathtofile: str):
     """ return folder name from full path file name """
-    mypath = pathlib.Path().absolute()
+    mypath = pathlib.Path(strfullpathtofile).absolute()
     return str(mypath)
 
 
-def get_folder_files_info(str_full_folder_path_name):
+def get_folder_files_info(str_full_folder_path_name: str):
     """Return list of files in folder str_full_folder_path_name.
     Each list item contains a tuple of two elements (filename_without_path, file_size_in_bytes).
     Returned tuple sorted by file_size ascending """
-    flist = None
+    # flist = None
 
     lpath = pathlib.Path(str_full_folder_path_name)
     if not lpath.is_dir():
@@ -43,7 +43,7 @@ def get_folder_files_info(str_full_folder_path_name):
     return tuple(sorted(flist, key=itemgetter(1)))
 
 
-def get_hash_file(path: str, algorithm="md5", bufsize=4096):
+def get_hash_file(path: str, algorithm="md5", bufsize=4096) -> bytes:
     """return hash of file"""
     h = hashlib.new(algorithm)
     with open(path, "rb") as f:
@@ -53,19 +53,19 @@ def get_hash_file(path: str, algorithm="md5", bufsize=4096):
     return h.digest()
 
 
-def is_folder_exist(full_folder_path):
+def is_folder_exist(full_folder_path: str):
     """check folder for exist and is folder
     return value is Boolean!"""
     folder = pathlib.Path(full_folder_path)
     return folder.is_dir() and folder.exists()
 
 
-def get_full_file_name(str_folder_owner, str_file_name):
+def get_full_file_name(str_folder_owner: str, str_file_name: str):
     """returns the full file name adding the folder name and file name"""
     return str_folder_owner + os.path.sep + str_file_name
 
 
-def delete_duplicate_file(folder_full_path, storage_folder=None):
+def delete_duplicate_file(folder_full_path: str, storage_folder: str = None):
     """move/delete duplicate files of the same size and context in specified folder (folder_full_path).
 
     folder_full_path - folder where duplicates are searched.
