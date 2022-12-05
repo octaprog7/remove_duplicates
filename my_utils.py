@@ -11,19 +11,19 @@ __name__ = "my_utils"
 __version__ = 1.0
 
 
-def get_file_name_from_path(fullpathtofile: str):
+def get_file_name_from_path(fullpathtofile: str) -> str:
     """ return filename from full path file name """
     path = pathlib.Path(fullpathtofile)
     return str(path.name)
 
 
-def get_folder_name_from_path(strfullpathtofile: str):
+def get_folder_name_from_path(strfullpathtofile: str) -> str:
     """ return folder name from full path file name """
     mypath = pathlib.Path(strfullpathtofile).absolute()
     return str(mypath)
 
 
-def get_folder_files_info(str_full_folder_path_name: str):
+def get_folder_files_info(str_full_folder_path_name: str) -> [tuple, None]:
     """Return list of files in folder str_full_folder_path_name.
     Each list item contains a tuple of two elements (filename_without_path, file_size_in_bytes).
     Returned tuple sorted by file_size ascending """
@@ -33,14 +33,11 @@ def get_folder_files_info(str_full_folder_path_name: str):
     if not lpath.is_dir():
         return None  # return None if str_full_folder_path_name not folder
 
-    flist = list()
     # enumerating files ONLY!!!
-    for child in lpath.iterdir():
-        if child.is_file():
-            file = pathlib.Path(child.absolute())
-            flist.append((child.name, file.stat().st_size))
+    lst_files = [(child.name, pathlib.Path(child.absolute()).stat().st_size) for
+                 child in lpath.iterdir() if child.is_file()]
 
-    return tuple(sorted(flist, key=itemgetter(1)))
+    return tuple(sorted(lst_files, key=itemgetter(1)))
 
 
 def get_hash_file(path: str, algorithm="md5", bufsize=4096) -> bytes:
@@ -53,19 +50,19 @@ def get_hash_file(path: str, algorithm="md5", bufsize=4096) -> bytes:
     return h.digest()
 
 
-def is_folder_exist(full_folder_path: str):
+def is_folder_exist(full_folder_path: str) -> bool:
     """check folder for exist and is folder
     return value is Boolean!"""
     folder = pathlib.Path(full_folder_path)
     return folder.is_dir() and folder.exists()
 
 
-def get_full_file_name(str_folder_owner: str, str_file_name: str):
+def get_full_file_name(str_folder_owner: str, str_file_name: str) -> str:
     """returns the full file name adding the folder name and file name"""
     return str_folder_owner + os.path.sep + str_file_name
 
 
-def delete_duplicate_file(folder_full_path: str, storage_folder: str = None):
+def delete_duplicate_file(folder_full_path: str, storage_folder: str = None) -> int:
     """move/delete duplicate files of the same size and context in specified folder (folder_full_path).
 
     folder_full_path - folder where duplicates are searched.
