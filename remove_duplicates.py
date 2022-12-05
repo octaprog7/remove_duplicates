@@ -9,7 +9,6 @@ import argparse
 import logging
 import pathlib
 import sys
-
 # my module
 import my_utils
 
@@ -35,7 +34,7 @@ def recursive_process_folder(start_folder, trash_folder):
     return ret_val
 
 
-def main():
+def main() -> int:
     str_storage_folder = None  # default value
     log_file_name = None
     str_search_folder = my_utils.get_folder_name_from_path(sys.argv[0])  # default value
@@ -58,10 +57,11 @@ def main():
     # setup logger start
     root_logger = logging.getLogger()
     root_logger.setLevel(logging.INFO)
+
+    # пользователь не задал имя файла-журнала, поэтому журналом становится sys.stdout
+    handler = logging.StreamHandler(sys.stdout)
     if log_file_name:
         handler = logging.FileHandler(log_file_name, "w", "utf-8")
-    else:  # пользователь не задал имя файла-журнала, поэтому журналом становится sys.stdout
-        handler = logging.StreamHandler(sys.stdout)
 
     formatter = logging.Formatter("%(asctime)s: %(levelname)s: %(message)s")
     handler.setFormatter(formatter)  # Pass handler as a parameter, not assign
@@ -72,14 +72,13 @@ def main():
         str_search_folder = args.start_folder
         if not my_utils.is_folder_exist(str_search_folder):
             logging.critical(f"Invalid path to search folder: {str_search_folder}. Exit!")
-            sys.exit(my_utils.INVALID_VALUE)
+            return my_utils.INVALID_VALUE
 
     if args.recycle_bin:
+        str_storage_folder = args.recycle_bin
         if not my_utils.is_folder_exist(args.recycle_bin):
             logging.critical(f"Invalid path to storage folder: {args.recycle_bin}. Exit!")
-            sys.exit(my_utils.INVALID_VALUE)
-        else:
-            str_storage_folder = args.recycle_bin
+            return my_utils.INVALID_VALUE
 
     # START
     logging.info(f"Search for duplicate files in the folder: {str_search_folder}")
@@ -88,21 +87,19 @@ def main():
     if str_storage_folder:
         logging.info(f"Storage folder: {str_storage_folder}")
 
-    ret_val = 0
-    ret_val += recursive_process_folder(str_search_folder, str_storage_folder)
+    ret_val = recursive_process_folder(str_search_folder, str_storage_folder)
 
+    action = "deleted"
     if args.recycle_bin:
-        movordel = "moved"
-    else:
-        movordel = "deleted"
+        action = "moved"
 
     logging.info(f"Found {ret_val} copies of files.")
 
     if ret_val:
-        logging.info(f"{ret_val} copies of files have been {movordel}.")
+        logging.info(f"{ret_val} copies of files have been {action}.")
 
-    sys.exit(ret_val)
+    return ret_val
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())
