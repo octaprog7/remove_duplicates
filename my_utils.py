@@ -8,19 +8,17 @@ INVALID_VALUE = -1
 NO_ERROR_VALUE = 0
 
 __name__ = "my_utils"
-__version__ = 1.0
-
-
-def get_file_name_from_path(fullpathtofile: str) -> str:
-    """ return filename from full path file name """
-    path = pathlib.Path(fullpathtofile)
-    return str(path.name)
+__version__ = 1.1
 
 
 def get_folder_name_from_path(strfullpathtofile: str) -> str:
     """ return folder name from full path file name """
-    mypath = pathlib.Path(strfullpathtofile).absolute()
-    return str(mypath)
+    mypath = pathlib.Path(strfullpathtofile)
+    if mypath.is_dir():
+        return str(mypath.resolve())
+    if mypath.is_file():
+        return str(mypath.parent.resolve())
+    raise ValueError(f"Invalid value: {strfullpathtofile}")
 
 
 def get_folder_files_info(str_full_folder_path_name: str) -> [tuple, None]:
@@ -109,7 +107,7 @@ def delete_duplicate_file(folder_full_path: str, storage_folder: str = None) -> 
                 else:
                     dst = get_full_file_name(storage_folder, item[index_file_name])  # make full file name
                     # move duplicate file to storage folder
-                    shutil.move(fname0, dst, copy_function=shutil.copy)
+                    shutil.move(src=fname0, dst=dst, copy_function=shutil.copy)
                     ret_val += 1
         else:  # file size not equals
             tpl_first = item
