@@ -11,7 +11,7 @@ import pathlib
 import sys
 
 # my module
-from remove_dublicates import my_utils
+import my_utils
 
 
 def recursive_process_folder(start_folder, trash_folder):
