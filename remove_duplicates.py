@@ -13,11 +13,11 @@ import sys
 import my_utils
 
 
-def recursive_process_folder(start_folder, trash_folder):
+def recursive_process_folder(start_folder: str, trash_folder: str):
     """
     :param start_folder: Search for duplicate files starts from this folder.
-    :param trash_folder: found copies of files are transferred to this folder
-    :return: count file copies deleted/moved
+    :param trash_folder: found copies of files are transferred to this folder.
+    :return: count file copies deleted/moved.
     """
     ret_val = my_utils.delete_duplicate_file(start_folder, trash_folder)
     logging.info(f"Folder {start_folder} processed. Found {ret_val} copies!")
@@ -35,6 +35,8 @@ def recursive_process_folder(start_folder, trash_folder):
 
 
 def main() -> int:
+    """return: count file copies deleted/moved
+    if error return my_utils.INVALID_VALUE."""
     str_storage_folder = None  # default value
     log_file_name = None
     str_search_folder = my_utils.get_folder_name_from_path(sys.argv[0])  # default value
