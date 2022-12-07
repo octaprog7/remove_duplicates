@@ -9,24 +9,24 @@ import argparse
 import logging
 import pathlib
 import sys
-# my module
 import my_utils
 
 
-def recursive_process_folder(start_folder: str, trash_folder: str):
+def recursive_process_folder(start_folder: str, trash_folder: str, file_name_pattern: str = ""):
     """
     :param start_folder: Search for duplicate files starts from this folder.
     :param trash_folder: found copies of files are transferred to this folder.
+    :param file_name_pattern: Only files matching the pattern are processed.
     :return: count file copies deleted/moved.
     """
-    ret_val = my_utils.delete_duplicate_file(start_folder, trash_folder)
+    ret_val = my_utils.delete_duplicate_file(start_folder, trash_folder, file_name_pattern)
     logging.info(f"Folder {start_folder} processed. Found {ret_val} copies!")
     # enumerating
     pth = pathlib.Path(start_folder)
     for child in pth.iterdir():
         try:
             if child.is_dir():
-                ret_val += recursive_process_folder(str(child.resolve()), trash_folder)
+                ret_val += recursive_process_folder(str(child.resolve()), trash_folder, file_name_pattern)
         except PermissionError:
             folder_name = str(child.resolve())
             logging.warning(f"Access is denied! Folder: {folder_name}")
@@ -48,11 +48,18 @@ def main() -> int:
                                                 If the number of command line parameters is zero, 
                                                 then the search folder = current folder.""")
 
-    parser.add_argument("--start_folder", type=str, help="The folder with which the recursive search begins")
+    parser.add_argument("--start_folder", type=str, help="The folder with which the recursive search begins.")
     parser.add_argument("--recycle_bin", type=str, help="Folder for storing duplicate files.")
-    parser.add_argument("--log_file", type=str, help="Log file.")
+    parser.add_argument("--log_file", type=str, help="Log file name.")
+    parser.add_argument("--fn_pattern", type=str,
+                        help="File name pattern. Only files matching the pattern are processed! "
+                             "Provides support for Unix shell-style wildcards.", default="*.*")
 
     args = parser.parse_args()
+
+    fn_pattern = ""
+    if args.fn_pattern:
+        fn_pattern = args.fn_pattern
 
     if args.log_file:
         log_file_name = args.log_file
@@ -60,7 +67,7 @@ def main() -> int:
     root_logger = logging.getLogger()
     root_logger.setLevel(logging.INFO)
 
-    # пользователь не задал имя файла-журнала, поэтому журналом становится sys.stdout
+    # Если пользователь не задал имя файла-журнала, поэтому журналом становится sys.stdout
     handler = logging.StreamHandler(sys.stdout)
     if log_file_name:
         handler = logging.FileHandler(log_file_name, "w", "utf-8")
@@ -84,18 +91,19 @@ def main() -> int:
 
     # START
     logging.info(f"Search for duplicate files in the folder: {str_search_folder}")
+    logging.info(f"Pattern file name: {fn_pattern}")
     if log_file_name:
         logging.info(f"Log file name: {log_file_name}")
     if str_storage_folder:
         logging.info(f"Storage folder: {str_storage_folder}")
 
-    ret_val = recursive_process_folder(str_search_folder, str_storage_folder)
+    ret_val = recursive_process_folder(str_search_folder, str_storage_folder, fn_pattern)
 
     action = "deleted"
     if args.recycle_bin:
         action = "moved"
 
-    logging.info(f"Found {ret_val} copies of files.")
+    logging.info(f"Total found {ret_val} copies of files.")
 
     if ret_val:
         logging.info(f"{ret_val} copies of files have been {action}.")
