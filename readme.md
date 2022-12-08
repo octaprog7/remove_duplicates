@@ -7,7 +7,7 @@ If the number of command line parameters is zero, then the search folder = curre
     --start_folder (first parameter): the folder with which the recursive search begins
     --recycle_bin (second parameter): optional folder for storing duplicate files (move file).
     --log_file: log file.
-    --fn_pattern": File name pattern. Only files matching the pattern are processed!
+    --fn_pattern: File name pattern. Only files matching the pattern are processed!
                    Provides support for Unix shell-style wildcards. Default value is "*.*"
 
 ### Call example
