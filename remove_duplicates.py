@@ -19,8 +19,14 @@ def recursive_process_folder(start_folder: str, trash_folder: str, file_name_pat
     :param file_name_pattern: Only files matching the pattern are processed.
     :return: count file copies deleted/moved.
     """
-    ret_val = my_utils.delete_duplicate_file(start_folder, trash_folder, file_name_pattern)
-    logging.info(f"Folder {start_folder} processed. Found {ret_val} copies!")
+    ret_val = 0
+    try:
+        ret_val = my_utils.delete_duplicate_file(start_folder, trash_folder, file_name_pattern)
+    except PermissionError as ex:
+        logging.warning(f"Folder {start_folder}. OS Error code: {ex.errno}. Error message: {ex.strerror}!")
+    else:
+        logging.info(f"Folder {start_folder} processed. Found {ret_val} copies!")
+
     # enumerating
     pth = pathlib.Path(start_folder)
     for child in pth.iterdir():
