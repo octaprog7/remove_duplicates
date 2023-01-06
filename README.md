@@ -12,3 +12,5 @@ If the number of command line parameters is zero, then the search folder = curre
 
 ### Call example
     remove_duplicates --start_folder=E:\YoutubeChannelsCopy --recycle_bin=E:\reserved --log_file=E:\reserved\logfile.txt --fn_pattern="*.png" 
+## Work log
+![alt text](https://github.com/octaprog7/remove_duplicates/blob/master/warn_del.png)
