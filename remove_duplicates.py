@@ -12,7 +12,7 @@ import sys
 import my_utils
 
 
-def recursive_process_folder(start_folder: str, trash_folder: str, file_name_pattern: str = ""):
+def recursive_process_folder(start_folder: str, trash_folder: str, file_name_pattern: list):
     """
     :param start_folder: Search for duplicate files starts from this folder.
     :param trash_folder: found copies of files are transferred to this folder.
@@ -21,7 +21,7 @@ def recursive_process_folder(start_folder: str, trash_folder: str, file_name_pat
     """
     ret_val = 0
     try:
-        ret_val = my_utils.delete_duplicate_file(start_folder, trash_folder, file_name_pattern)
+        ret_val = my_utils.delete_duplicate_file(start_folder, file_name_pattern, trash_folder, logging)
     except PermissionError as ex:
         logging.warning(f"Folder {start_folder}. OS Error code: {ex.errno}. Error message: {ex.strerror}!")
     else:
@@ -65,7 +65,8 @@ def main() -> int:
 
     fn_pattern = ""
     if args.fn_pattern:
-        fn_pattern = args.fn_pattern
+        fn_pattern = args.fn_pattern.replace(" ", "")  # удаляю все пробелы из строки
+        fn_pattern = fn_pattern.split(",")  # создаю список
 
     if args.log_file:
         log_file_name = args.log_file
