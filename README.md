@@ -16,3 +16,4 @@ If the number of command line parameters is zero, then the search folder = curre
 ![alt text](https://github.com/octaprog7/remove_duplicates/blob/master/warn_del.png)
 ## PyPi
 https://pypi.org/project/remove-duplicates/
+After installation use rmdup --help instead of remove_duplicates
