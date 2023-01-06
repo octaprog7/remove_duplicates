@@ -22,7 +22,7 @@ def get_folder_name_from_path(strfullpathtofile: str) -> str:
     raise ValueError(f"Invalid value: {strfullpathtofile}")
 
 
-def get_folder_files_info(str_full_folder_path_name: str, file_name_pattern: str = "") -> [tuple, None]:
+def get_folder_files_info(str_full_folder_path_name: str, file_name_pattern: list) -> [tuple, None]:
     """Return list of files in folder str_full_folder_path_name.
     Each list item contains a tuple of two elements (filename_without_path, file_size_in_bytes).
     Returned tuple sorted by file_size ascending.
@@ -33,8 +33,15 @@ def get_folder_files_info(str_full_folder_path_name: str, file_name_pattern: str
         return None  # return None if str_full_folder_path_name not folder
 
     # enumerating files ONLY!!!
-    lst_files = [(child.name, pathlib.Path(child).stat().st_size)
-                 for child in lpath.iterdir() if child.is_file() and fnmatch.fnmatch(child.name, file_name_pattern)]
+    # lst_files = [(child.name, pathlib.Path(child).stat().st_size)
+    #              for child in lpath.iterdir() if child.is_file() and fnmatch.fnmatch(child.name, file_name_pattern)]
+    lst_files = list()
+    for child in lpath.iterdir():
+        if child.is_file():
+            for pattern in file_name_pattern:
+                if fnmatch.fnmatch(child.name, pattern):
+                    lst_files.append((child.name, pathlib.Path(child).stat().st_size))
+                    break
 
     return tuple(sorted(lst_files, key=itemgetter(1)))
 
@@ -61,7 +68,8 @@ def get_full_file_name(str_folder_owner: str, str_file_name: str) -> str:
     return str_folder_owner + os.path.sep + str_file_name
 
 
-def delete_duplicate_file(folder_full_path: str, storage_folder: str = None, file_name_pattern: str = "") -> int:
+def delete_duplicate_file(folder_full_path: str, file_name_pattern: list,
+                          storage_folder: str = None, log=None) -> int:
     """move/delete duplicate files of the same size and context in specified folder (folder_full_path).
 
     folder_full_path - folder where duplicates are searched.
@@ -104,10 +112,12 @@ def delete_duplicate_file(folder_full_path: str, storage_folder: str = None, fil
                 if not storage_folder:
                     f = pathlib.Path(fname0)
                     f.unlink()  # delete file
+                    log.warning(f"File {fname0} deleted!")
                 else:
                     dst = get_full_file_name(storage_folder, item[index_file_name])  # make full file name
                     # move duplicate file to storage folder
                     shutil.move(src=fname0, dst=dst, copy_function=shutil.copy)
+                    log.warning(f"File {fname0} moved!")
                 ret_val += 1    # для if и elseS
         else:  # file size not equals
             tpl_first = item
