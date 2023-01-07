@@ -11,10 +11,10 @@ If the number of command line parameters is zero, then the search folder = curre
                    Provides support for Unix shell-style wildcards. Default value is "*.*"
 
 ### Call example
-    remove_duplicates --start_folder=E:\YoutubeChannelsCopy --recycle_bin=E:\reserved --log_file=E:\reserved\logfile.txt --fn_pattern="*.png" 
+    remove_dup --start_folder=E:\YoutubeChannelsCopy --recycle_bin=E:\reserved --log_file=E:\reserved\logfile.txt --fn_pattern="*.png" 
 ## Work log
 ![alt text](https://github.com/octaprog7/remove_duplicates/blob/master/warn_del.png)
 ## PyPi
 https://pypi.org/project/remove-duplicates/
 
-After installation use rmdup --help instead of remove_duplicates
+After installation use rmdup --help instead of remove_dup
