@@ -21,13 +21,14 @@ def _win32_behavior(pth: str) -> str:
     return str(path.resolve())
 
 
-def recursive_process_folder(start_folder: str, trash_folder: str, file_name_pattern: list):
+def recursive_process_folder(start_folder: str, trash_folder: str,
+                             file_name_pattern: list, not_recursively: bool = False):
     """
     :param start_folder: Search for duplicate files starts from this folder.
     :param trash_folder: found copies of files are transferred to this folder.
     :param file_name_pattern: Only files matching the pattern are processed.
-    :return: count file copies deleted/moved.
-    """
+    :param not_recursively: If this parameter is set, then recursive search is disabled!
+    :return: count file copies deleted/moved."""
     ret_val = 0
     try:
         ret_val = my_utils.delete_duplicate_file(start_folder, file_name_pattern, trash_folder, logging)
@@ -35,6 +36,9 @@ def recursive_process_folder(start_folder: str, trash_folder: str, file_name_pat
         logging.warning(f"Folder {start_folder}. OS Error code: {ex.errno}. Error message: {ex.strerror}!")
     else:
         logging.info(f"Folder {start_folder} processed. Found {ret_val} copies!")
+
+    if not_recursively:
+        return ret_val
 
     # enumerating
     pth = pathlib.Path(start_folder)
@@ -69,12 +73,14 @@ def main() -> int:
                                                 If the number of command line parameters is zero, 
                                                 then the search folder = current folder.""")
 
-    parser.add_argument("--start_folder", type=str, help="The folder with which the recursive search begins.")
+    parser.add_argument("-start", "--start_folder", type=str, help="The folder with which the recursive search begins.")
     parser.add_argument("--recycle_bin", type=str, help="Folder for storing duplicate files.")
-    parser.add_argument("--log_file", type=str, help="Log file name.")
-    parser.add_argument("--fn_pattern", type=str,
+    parser.add_argument("-log", "--log_file", type=str, help="Log file name.")
+    parser.add_argument("-fnp", "--fn_pattern", type=str,
                         help="File name pattern. Only files matching the pattern are processed! "
                              "Provides support for Unix shell-style wildcards.", default="*.*")
+    parser.add_argument("-nr", "--not_recursively", action="store_true",
+                        help="If this parameter is set, then recursive search is disabled!")
 
     args = parser.parse_args()
 
@@ -118,8 +124,10 @@ def main() -> int:
         logging.info(f"Log file name: {log_file_name}")
     if str_storage_folder:
         logging.info(f"Storage folder: {str_storage_folder}")
+    if args.not_recursively:
+        logging.info(f"Recursive search disabled!")
 
-    ret_val = recursive_process_folder(str_search_folder, str_storage_folder, fn_pattern)
+    ret_val = recursive_process_folder(str_search_folder, str_storage_folder, fn_pattern, args.not_recursively)
 
     action = "deleted"
     if args.recycle_bin:
