@@ -12,7 +12,7 @@ import sys
 import remove_duplicates.my_utils as my_utils
 
 
-def win32_behavior(pth: str) -> str:
+def _win32_behavior(pth: str) -> str:
     """Костыль для платформы win32. Если в функцию передан путь который не является ни файлом и не папкой,
     то возвращается путь к родительскому каталогу"""
     path = pathlib.Path(pth)
@@ -58,7 +58,7 @@ def main() -> int:
         # На платформе win32 аргумент sys.argv[0] содержит не имя выполняемого файла,
         # а имя несуществующего файла python скрипта!
         # Проверял под python 3.10 в Win10. В Debian 11 все в порядке.
-        str_search_folder = win32_behavior(sys.argv[0])
+        str_search_folder = _win32_behavior(sys.argv[0])
     else:  # other platform
         str_search_folder = my_utils.get_folder_name_from_path(sys.argv[0])
 
