@@ -12,6 +12,15 @@ import sys
 import remove_duplicates.my_utils as my_utils
 
 
+def win32_behavior(pth: str) -> str:
+    """Костыль для платформы win32. Если в функцию передан путь который не является ни файлом и не папкой,
+    то возвращается путь к родительскому каталогу"""
+    path = pathlib.Path(pth)
+    if not path.is_file() and not path.is_dir():
+        return str(path.parent.resolve())
+    return str(path.resolve())
+
+
 def recursive_process_folder(start_folder: str, trash_folder: str, file_name_pattern: list):
     """
     :param start_folder: Search for duplicate files starts from this folder.
@@ -41,11 +50,17 @@ def recursive_process_folder(start_folder: str, trash_folder: str, file_name_pat
 
 
 def main() -> int:
-    """return: count file copies deleted/moved
-    if error return my_utils.INVALID_VALUE."""
-    str_storage_folder = None  # default value
-    log_file_name = None
-    str_search_folder = my_utils.get_folder_name_from_path(sys.argv[0])  # default value
+    """return: count file copies deleted/moved!
+    If error return my_utils.INVALID_VALUE."""
+    str_storage_folder, str_search_folder, log_file_name = None, None, None     # default values
+
+    if "win32" == sys.platform:
+        # На платформе win32 аргумент sys.argv[0] содержит не имя выполняемого файла,
+        # а имя несуществующего файла python скрипта!
+        # Проверял под python 3.10 в Win10. В Debian 11 все в порядке.
+        str_search_folder = win32_behavior(sys.argv[0])
+    else:  # other platform
+        str_search_folder = my_utils.get_folder_name_from_path(sys.argv[0])
 
     parser = argparse.ArgumentParser(description="""Utility to recursive search and move/delete duplicate files 
                                                 of the same size and context in specified folder.""",
