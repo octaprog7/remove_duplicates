@@ -73,8 +73,8 @@ def main() -> int:
                                                 If the number of command line parameters is zero, 
                                                 then the search folder = current folder.""")
 
-    parser.add_argument("-start", "--start_folder", type=str, help="The folder with which the recursive search begins.")
-    parser.add_argument("--recycle_bin", type=str, help="Folder for storing duplicate files.")
+    parser.add_argument("-st", "--start_folder", type=str, help="The folder with which the recursive search begins.")
+    parser.add_argument("-rb", "--recycle_bin", type=str, help="Folder for storing duplicate files.")
     parser.add_argument("-log", "--log_file", type=str, help="Log file name.")
     parser.add_argument("-fnp", "--fn_pattern", type=str,
                         help="File name pattern. Only files matching the pattern are processed! "
