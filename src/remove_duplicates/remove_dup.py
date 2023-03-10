@@ -5,11 +5,12 @@ command string parameters:
 first parameter:    full_path_to_folder - folder where duplicates are searched.
 second parameter:   optional - folder for storage duplicate files """
 
-import argparse
+import sys
 import logging
 import pathlib
-import sys
+import argparse
 import remove_duplicates.my_utils as my_utils
+import remove_duplicates.str_with_trans as str_with_trans
 
 
 def _win32_behavior(pth: str) -> str:
@@ -33,9 +34,10 @@ def recursive_process_folder(start_folder: str, trash_folder: str,
     try:
         ret_val = my_utils.delete_duplicate_file(start_folder, file_name_pattern, trash_folder, logging)
     except PermissionError as ex:
-        logging.warning(f"Folder {start_folder}. OS Error code: {ex.errno}. Error message: {ex.strerror}!")
+        #  logging.warning(f"Folder {start_folder}. OS Error code: {ex.errno}. Error message: {ex.strerror}!")
+        logging.warning(str_with_trans.strAccessError + str(ex))
     else:
-        logging.info(f"Folder {start_folder} processed. Found {ret_val} copies!")
+        logging.info(str_with_trans.strProcessInfo.format(start=start_folder, retval=ret_val))
 
     if not_recursively:
         return ret_val
@@ -48,7 +50,7 @@ def recursive_process_folder(start_folder: str, trash_folder: str,
                 ret_val += recursive_process_folder(str(child.resolve()), trash_folder, file_name_pattern)
         except PermissionError:
             folder_name = str(child.resolve())
-            logging.warning(f"Access is denied! Folder: {folder_name}")
+            logging.warning(str_with_trans.strAccessError + folder_name)
     # return value
     return ret_val
 
@@ -66,21 +68,13 @@ def main() -> int:
     else:  # other platform
         str_search_folder = my_utils.get_folder_name_from_path(sys.argv[0])
 
-    parser = argparse.ArgumentParser(description="""Utility to recursive search and move/delete duplicate files 
-                                                of the same size and context in specified folder.""",
-                                     epilog="""If the storage folder is not specified, 
-                                                then duplicate files will be deleted!
-                                                If the number of command line parameters is zero, 
-                                                then the search folder = current folder.""")
+    parser = argparse.ArgumentParser(description=str_with_trans.strDescription, epilog=str_with_trans.strEpilog)
 
-    parser.add_argument("-st", "--start_folder", type=str, help="The folder with which the recursive search begins.")
-    parser.add_argument("-rb", "--recycle_bin", type=str, help="Folder for storing duplicate files.")
-    parser.add_argument("-log", "--log_file", type=str, help="Log file name.")
-    parser.add_argument("-fnp", "--fn_pattern", type=str,
-                        help="File name pattern. Only files matching the pattern are processed! "
-                             "Provides support for Unix shell-style wildcards.", default="*.*")
-    parser.add_argument("-nr", "--not_recursively", action="store_true",
-                        help="If this parameter is set, then recursive search is disabled!")
+    parser.add_argument("-st", "--start_folder", type=str, help=str_with_trans.strRecursiveSearchBegin)
+    parser.add_argument("-rb", "--recycle_bin", type=str, help=str_with_trans.strFolderForStor)
+    parser.add_argument("-log", "--log_file", type=str, help=str_with_trans.strLogFileName)
+    parser.add_argument("-fnp", "--fn_pattern", type=str, help=str_with_trans.strFileNamePattern, default="*.*")
+    parser.add_argument("-nr", "--not_recursively", action="store_true", help=str_with_trans.strNotRecursively)
 
     args = parser.parse_args()
 
@@ -108,35 +102,35 @@ def main() -> int:
     if args.start_folder:
         str_search_folder = args.start_folder
         if not my_utils.is_folder_exist(str_search_folder):
-            logging.critical(f"Invalid path to search folder: {str_search_folder}. Exit!")
+            logging.critical(str_with_trans.strInvalidSearchFolder.format(search_folder=str_search_folder))
             return my_utils.INVALID_VALUE
 
     if args.recycle_bin:
         str_storage_folder = args.recycle_bin
         if not my_utils.is_folder_exist(args.recycle_bin):
-            logging.critical(f"Invalid path to storage folder: {args.recycle_bin}. Exit!")
+            logging.critical(str_with_trans.strInvalidStorageFolder.format(stor_folder = args.recycle_bin))
             return my_utils.INVALID_VALUE
 
     # START
-    logging.info(f"Search for duplicate files in the folder: {str_search_folder}")
-    logging.info(f"Pattern file name: {fn_pattern}")
+    logging.info(str_with_trans.strSearchForDupFilesInFolder.format(folder_name=str_search_folder))
+    logging.info(str_with_trans.strPatternFileName.format(pattern=fn_pattern))
     if log_file_name:
-        logging.info(f"Log file name: {log_file_name}")
+        logging.info(str_with_trans.strLogFileName_1.format(log=log_file_name))
     if str_storage_folder:
-        logging.info(f"Storage folder: {str_storage_folder}")
+        logging.info(str_with_trans.strStorFolder.format(storage=str_storage_folder))
     if args.not_recursively:
-        logging.info(f"Recursive search disabled!")
+        logging.info(str_with_trans.strRecursiveSearchDisabled)
 
     ret_val = recursive_process_folder(str_search_folder, str_storage_folder, fn_pattern, args.not_recursively)
 
-    action = "deleted"
+    action = str_with_trans.strActionDel
     if args.recycle_bin:
-        action = "moved"
+        action = str_with_trans.strActionMov
 
-    logging.info(f"Total found {ret_val} copies of files.")
+    logging.info(str_with_trans.strTotalFound.format(total=ret_val))
 
     if ret_val:
-        logging.info(f"{ret_val} copies of files have been {action}.")
+        logging.info(str_with_trans.strLastInfo(cnt=ret_val, action=action))
 
     return ret_val
 
