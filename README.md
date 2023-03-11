@@ -19,3 +19,6 @@ If the number of command line parameters is zero, then the search folder = curre
 https://pypi.org/project/remove-duplicates/
 
 After installation use rmdup --help instead of remove_dup
+
+## Internationalization
+Most of the program messages are translated into five languages: English, Russian, German, Spanish, French.
