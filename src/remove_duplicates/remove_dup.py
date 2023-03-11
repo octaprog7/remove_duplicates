@@ -58,6 +58,8 @@ def recursive_process_folder(start_folder: str, trash_folder: str,
 def main() -> int:
     """return: count file copies deleted/moved!
     If error return my_utils.INVALID_VALUE."""
+    # изменяю кодировку stdout
+    sys.stdout.reconfigure(encoding=str_with_trans.default_encoding)
     str_storage_folder, str_search_folder, log_file_name = None, None, None     # default values
 
     if "win32" == sys.platform:
