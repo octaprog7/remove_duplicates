@@ -56,6 +56,7 @@ class CSVProvider(IDataProvider):
                 if _b:  # первая строка cvs файла должна содержать названия столбцов! создание кортежа индексов столбцов
                     column_indexes = [_row.index(column_name) for column_name in column_names]
                     _b = False
+                    continue
                 # кортеж значений строк нужных столбцов
                 yield tuple([_row[_index] for _index in column_indexes])
 
