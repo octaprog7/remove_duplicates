@@ -132,7 +132,7 @@ def main() -> int:
     logging.info(str_with_trans.strTotalFound.format(total=ret_val))
 
     if ret_val:
-        logging.info(str_with_trans.strLastInfo(cnt=ret_val, action=action))
+        logging.info(str_with_trans.strLastInfo.format(cnt=ret_val, action=action))
 
     return ret_val
 
