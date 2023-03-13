@@ -39,3 +39,7 @@ strActionDel = _I("strActionDel")    # файл удален!
 strActionMov = _I("strActionMov")      # файл перемещен!
 strTotalFound = _I("strTotalFound")
 strLastInfo = _I("strLastInfo")
+
+strInvalidValue = _I("strInvalidValue")
+strFileDeleted = _I("strFileDeleted")
+strFileMoved = _I("strFileMoved")
