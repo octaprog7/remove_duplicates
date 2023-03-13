@@ -22,3 +22,4 @@ After installation use rmdup --help instead of remove_dup
 
 ## Internationalization
 Most of the program messages are translated into five languages: English, Russian, German, Spanish, French.
+See: https://github.com/octaprog7/PyInternalization.
