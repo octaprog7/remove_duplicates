@@ -110,7 +110,7 @@ def main() -> int:
     if args.recycle_bin:
         str_storage_folder = args.recycle_bin
         if not my_utils.is_folder_exist(args.recycle_bin):
-            logging.critical(str_with_trans.strInvalidStorageFolder.format(stor_folder = args.recycle_bin))
+            logging.critical(str_with_trans.strInvalidStorageFolder.format(stor_folder=args.recycle_bin))
             return my_utils.INVALID_VALUE
 
     # START
