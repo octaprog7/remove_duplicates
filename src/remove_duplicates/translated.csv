@@ -16,9 +16,9 @@
 "strStorFolder","Storage folder: {storage}","Папка хранения: {storage}","Dossier de stockage : {storage}","Speicherordner: {storage}","Carpeta de almacenamiento: {storage}"
 "strRecursiveSearchDisabled","Recursive search disabled!","Рекурсивный поиск отключен!","Recherche récursive désactivée !","Rekursive Suche deaktiviert!","Búsqueda recursiva deshabilitado!"
 "strActionDel","deleted","удалено","supprimé","entfernt.","remoto"
-"strActionMov","moved","перемещенo","déplacé","gerührt","movido"
-"strTotalFound","Total found {total} copies of files.","Всего найдено {total} копий файлов.","Total trouvé {total} copies de fichiers.","Insgesamt gefundene {total} Kopien von Dateien.","Total encontrado {total} copias de archivos."
-"strLastInfo","{cnt} copies of files have been {action}.","{cnt} копий файлов {action}.","{cnt} copies de fichiers ont été {action}.","{cnt} Kopien von Dateien waren {action}.","{cnt} copias de archivos han sido {action}."
+"strActionMov","moved",перемещенo,"déplacé","gerührt","movido"
+"strTotalFound","Total found {total} copies of files.",Всего найдено копий файлов: {total}.,"Total trouvé {total} copies de fichiers.","Insgesamt gefundene {total} Kopien von Dateien.","Total encontrado {total} copias de archivos."
+"strLastInfo","{cnt} copies of files have been {action}.",{action} копий файлов: {cnt}.,{cnt} copies de fichiers ont été {action}.,"{cnt} Kopien von Dateien waren {action}.","{cnt} copias de archivos han sido {action}."
 strInvalidValue,Invalid value: {val},Неверное значение: {val},Valeur non valide: {val},Ungültiger Wert: {val},Valor no válido: {val}
 strFileDeleted,File {fname} deleted!,Файл {fname} удален!,Fichier {fname} supprimé!,Datei {fname} gelöscht!,Archivo {fname} eliminado!
 strFileMoved,File {fname} moved!,Файл {fname} перемещен!,Fichier {fname} déplacé!,Datei {fname} verschoben!,Archivo {fname} movido!
