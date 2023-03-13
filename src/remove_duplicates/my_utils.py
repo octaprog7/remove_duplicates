@@ -4,12 +4,14 @@ from operator import itemgetter
 import hashlib
 import os
 import fnmatch
+import filecmp
+import remove_duplicates.str_with_trans as str_with_trans
 
 INVALID_VALUE = -1
 NO_ERROR_VALUE = 0
 
 __name__ = "my_utils"
-__version__ = 1.1
+__version__ = 1.2
 
 
 def get_folder_name_from_path(strfullpathtofile: str) -> str:
@@ -19,7 +21,7 @@ def get_folder_name_from_path(strfullpathtofile: str) -> str:
         return str(mypath.resolve())
     if mypath.is_file():
         return str(mypath.parent.resolve())
-    raise ValueError(f"Invalid value: {strfullpathtofile}")
+    raise ValueError(str_with_trans.strInvalidValue.format(val=strfullpathtofile))
 
 
 def get_folder_files_info(str_full_folder_path_name: str, file_name_pattern: list) -> [tuple, None]:
@@ -106,18 +108,19 @@ def delete_duplicate_file(folder_full_path: str, file_name_pattern: list,
         if item[index_file_size] == tpl_first[index_file_size]:
             fname0 = get_full_file_name(folder_full_path, item[index_file_name])
             fname1 = get_full_file_name(folder_full_path, tpl_first[index_file_name])
-            h0 = get_hash_file(fname0)
-            h1 = get_hash_file(fname1)
-            if h0 == h1:
+            # h0 = get_hash_file(fname0)
+            # h1 = get_hash_file(fname1)
+            # if h0 == h1:
+            if filecmp.cmp(fname0, fname1):     # возможен прирост скорости сравнения по сравнению с get_hash_file
                 if not storage_folder:
                     f = pathlib.Path(fname0)
                     f.unlink()  # delete file
-                    log.warning(f"File {fname0} deleted!")
+                    log.warning(str_with_trans.strFileDeleted.format(fname=fname0))
                 else:
                     dst = get_full_file_name(storage_folder, item[index_file_name])  # make full file name
                     # move duplicate file to storage folder
                     shutil.move(src=fname0, dst=dst, copy_function=shutil.copy)
-                    log.warning(f"File {fname0} moved!")
+                    log.warning(str_with_trans.strFileMoved.format(fname=fname0))
                 ret_val += 1    # для if и elseS
         else:  # file size not equals
             tpl_first = item
